@@ -1,31 +1,41 @@
+#include "./src/Display.hpp"
+#include <SDL2/SDL.h>
 #include <iostream>
-#include "c8vm.hpp"
-#include "Display.hpp"
 
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Uso: " << argv[0] << " <arquivo.ch8>\n";
-        return 1;
-    }
-    VM vm(0x200);
-    vm.CarregarROM(argv[1], 0x200);
-
+int main() {
     try {
         Display display;
+
+        display.Clear(); // Limpa tudo antes de desenhar
+
+        // Desenha a moldura (borda)
+        for (int x = 0; x < display.HEIGHT; ++x) {
+            display.DrawPixel(x, 0, true);                       // Topo
+            display.DrawPixel(x, display.HEIGHT - 1, true);     // Base
+        }
+
+        for (int y = 0; y < display.HEIGHT; ++y) {
+            display.DrawPixel(0, y, true);                       // Esquerda
+            display.DrawPixel(display.HEIGHT - 1, y, true);      // Direita
+        }
+
+        // Atualiza o renderizador
+        display.Render();
+
+        // Mantém a janela aberta até o usuário fechar
         bool running = true;
-        SDL_Event event;
+        SDL_Event e;
 
         while (running) {
-            while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT) running = false;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) {
+                    running = false;
+                } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
+                    running = false;
+                }
             }
-            vm.ExecutarInstrucao();
 
-            // Atualiza o display com base na memória da VM
-            display.UpdateFromMemory(vm.DISPLAY);
-            display.Render();
-
-            SDL_Delay(100);
+            SDL_Delay(16); // evita uso excessivo de CPU (~60 FPS)
         }
 
     } catch (const std::exception& e) {

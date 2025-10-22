@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <stdexcept>
-#include "Interface/IDisplay.hpp"
+#include "../Interface/IDisplay.hpp"
 
 class Display:IDisplay {
 public:
