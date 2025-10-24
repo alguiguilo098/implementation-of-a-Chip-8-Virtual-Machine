@@ -57,6 +57,10 @@ public:
     // VX <<= 1, VF = MSB
     void shiftLeft(uint8_t X);
 
+    void execute8Group(uint8_t X, uint8_t Y, uint8_t N);
+    void executarGrupoE(uint8_t X, uint8_t NN);
+    void executarGrupoF(uint8_t X, uint8_t NN);
+    
     VM(uint16_t pc_inicial);
     void CarregarROM(
         char *arq_rom,
