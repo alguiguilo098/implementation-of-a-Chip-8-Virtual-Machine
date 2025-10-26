@@ -1,8 +1,8 @@
 #pragma once
-
+#include "IVm.hpp"
 #include <stdint.h>
-#include "Interface/IVm.hpp"
-class VM : IVM
+
+class VM 
 {
 
     // Componentes da VM
@@ -16,8 +16,7 @@ class VM : IVM
 public:
     uint8_t DISPLAY[64 * 32]; // Tela
     void cls(uint16_t inst);
-    // Desenha um sprite de N bytes na tela em VX, VY
-    void drawSprite(uint8_t VX, uint8_t VY, uint8_t N);
+
     // Salta para endereço NNN
     void jump(uint16_t NNN);
     // Chama subrotina em NNN (empilha PC)
@@ -56,14 +55,16 @@ public:
     void shiftRight(uint8_t X);
     // VX <<= 1, VF = MSB
     void shiftLeft(uint8_t X);
-
+    // Executa instruções do grupo 8XYN
     void execute8Group(uint8_t X, uint8_t Y, uint8_t N);
-    void executarGrupoE(uint8_t X, uint8_t NN);
-    void executarGrupoF(uint8_t X, uint8_t NN);
+
+    
+
+
     
     VM(uint16_t pc_inicial);
     void CarregarROM(
-        char *arq_rom,
+        const char *arq_rom,
         uint16_t pc_inicial);
     void ExecutarInstrucao();
     void ImprimirRegistradores();

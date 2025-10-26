@@ -12,33 +12,6 @@ void VM::cls(uint16_t inst)
     }
 }
 
-void VM::drawSprite(uint8_t VX, uint8_t VY, uint8_t N)
-{
-    V[0xF] = 0; // VF = 0 inicialmente, será usado para colisão
-
-    for (int yLine = 0; yLine < N; yLine++)
-    {
-        uint8_t pixel = RAM[I + yLine]; // lê a linha do sprite da memória
-        for (int xLine = 0; xLine < 8; xLine++)
-        {
-            // verifica se o bit está ativo
-            if ((pixel & (0x80 >> xLine)) != 0)
-            {
-                int xPos = (VX + xLine) % 64; // tela de 64 pixels de largura
-                int yPos = (VY + yLine) % 32; // tela de 32 pixels de altura
-                int index = yPos * 64 + xPos;
-
-                // detecta colisão
-                if (display[index] == 1)
-                    V[0xF] = 1;
-
-                // XOR: alterna o pixel
-                display[index] ^= 1;
-            }
-        }
-    }
-}
-
 void VM::jump(uint16_t NNN)
 {
     this->PC = NNN;
@@ -176,63 +149,25 @@ void VM::execute8Group(uint8_t X, uint8_t Y, uint8_t N)
     }
 }
 
-void VM::executarGrupoE(uint8_t X, uint8_t NN)
-{
-    switch (NN)
-    {
-    case 0x9E:
-        // Pula próxima instrução se tecla em VX estiver pressionada
-        break;
-    case 0xA1:
-        // Pula próxima instrução se tecla em VX não estiver pressionada
-        break;
-    default:
-        printf("Instrução do grupo E não implementada! NN: 0x%X\n", NN);
-    }
-}
-void VM::executarGrupoF(uint8_t X, uint8_t NN){
-    switch (NN)
-    {
-    case 0x07:
-        setRegister(X, delayTimer); // FX07
-        break;
-    case 0x0A:
-        waitForKeyPress(X); // FX0A
-        break;
-    case 0x15:
-        setDelayTimer(V[X]); // FX15
-        break;
-    case 0x18:
-        setSoundTimer(V[X]); // FX18
-        break;
-    case 0x1E:
-        addToI(V[X]); // FX1E
-        break;
-    case 0x29:
-        setIToSprite(V[X]); // FX29
-        break;
-    case 0x33:
-        storeBCD(V[X]); // FX33
-        break;
-    case 0x55:
-        storeRegisters(X); // FX55
-        break;
-    case 0x65:
-        loadRegisters(X); // FX65
-        break;
-    default:
-        printf("Instrução FX%02X não implementada!\n", NN);
-    }
-}
+//
 // Inicializa a VM
 VM::VM(uint16_t pc_inicial)
 {
-
-    this->PC = pc_inicial;
-};
+    PC = pc_inicial;
+    I = 0;
+    SP = 0;
+    for (int i = 0; i < 16; i++)
+        V[i] = 0;
+    for (int i = 0; i < 4096; i++)
+        RAM[i] = 0;
+    for (int i = 0; i < 64 * 32; i++)
+        DISPLAY[i] = 0;
+    for (int i = 0; i < 16; i++)
+        stack[i] = 0;
+}
 
 //  Carrega o arquivo ROM na memória da VM
-void VM::CarregarROM(char *arq_rom, uint16_t pc_inicial)
+void VM::CarregarROM(const char *arq_rom, uint16_t pc_inicial)
 {
     FILE *rom = fopen(arq_rom, "rb");
     fseek(rom, 0, SEEK_END);
@@ -299,28 +234,8 @@ void VM::ExecutarInstrucao()
         skipIfRegistersNotEqual(X, Y); // 9XY0
         break;
 
-    case 0xA:
-        setI(NNN); // ANNN
-        break;
-
     case 0xB:
         jumpRelative(NNN); // BNNN
-        break;
-
-    case 0xC:
-        random(X, NN); // CXNN
-        break;
-
-    case 0xD:
-        drawSprite(V[X], V[Y], N); // DXYN
-        break;
-
-    case 0xE:
-        executeEGroup(X, NN); // EX9E, EXA1
-        break;
-
-    case 0xF:
-        executeFGroup(X, NN); // FX??
         break;
 
     default:
