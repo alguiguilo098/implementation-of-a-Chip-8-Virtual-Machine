@@ -2,6 +2,7 @@
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "*.MD": "bibtex",
-        "c8vm.h": "c"
+        "c8vm.h": "c",
+        "iostream": "cpp"
     }
 }
