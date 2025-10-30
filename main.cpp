@@ -3,8 +3,9 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "./src/C8Vm/c8vm.hpp"
-
-// ---------- Main ----------
+// Nome do autor: Guilherme Almeida Lopes
+// Programa principal
+// Inicializa a VM, carrega a ROM e inicia o loop de emulação
 int main(int argc, char** argv) {
     try {
         Display display;

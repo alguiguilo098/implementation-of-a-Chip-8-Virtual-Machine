@@ -8,7 +8,7 @@ Keyboard::Keyboard() : quit(false) {
     keyStates.fill(false);
     chipKeys.fill(0);
 }
-
+// Mapeia SDL_Keycode para índice do keypad Chip-8
 int Keyboard::SDLKeyToChip8Index(SDL_Keycode k)
 {
     // Mapeamento padrão usado no projeto:

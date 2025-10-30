@@ -32,11 +32,13 @@ void VM::cls(uint16_t inst)
 
 void VM::jump(uint16_t NNN)
 {
+    // Jump to address NNN
     this->PC = NNN;
 }
 
 void VM::callSubroutine(uint16_t NNN)
 {
+    // Call subroutine at NNN
     this->stack[this->SP] = this->PC;
     this->SP++;
     this->PC = NNN;
@@ -45,6 +47,7 @@ void VM::callSubroutine(uint16_t NNN)
 void VM::returnSubroutine()
 {
     if (this->SP > 0) {
+        // Return from subroutine
         this->SP--;
         this->PC = this->stack[this->SP];
     }
@@ -52,11 +55,13 @@ void VM::returnSubroutine()
 
 void VM::jumpRelative(uint16_t NNN)
 {
+    // Jump to address NNN + V0
     this->PC = NNN + this->V[0];
 }
 
 void VM::setIndex(uint16_t NNN)
 {
+    // Set index register I to NNN
     this->I = NNN;
 }
 
@@ -64,36 +69,43 @@ void VM::setIndex(uint16_t NNN)
 
 void VM::setRegister(uint8_t X, uint8_t NN)
 {
+    // Set V[X] to NN
     this->V[X] = NN;
 }
 
 void VM::addImmediate(uint8_t X, uint8_t NN)
 {
+    // Add NN to V[X]
     this->V[X] += NN;
 }
 
 void VM::setRegisterRegister(uint8_t X, uint8_t Y)
 {
+    // Set V[X] to V[Y]
     this->V[X] = this->V[Y];
 }
 
 void VM::orRegisters(uint8_t X, uint8_t Y)
 {
+    // V[X] = V[X] OR V[Y]
     this->V[X] |= this->V[Y];
 }
 
 void VM::andRegisters(uint8_t X, uint8_t Y)
 {
+    // V[X] = V[X] AND V[Y]
     this->V[X] &= this->V[Y];
 }
 
 void VM::xorRegisters(uint8_t X, uint8_t Y)
 {
+    // V[X] = V[X] XOR V[Y]
     this->V[X] ^= this->V[Y];
 }
 
 void VM::addRegisters(uint8_t X, uint8_t Y)
 {
+    // V[X] = V[X] + V[Y], set VF = carry
     uint16_t sum = this->V[X] + this->V[Y];
     this->V[0xF] = (sum > 0xFF) ? 1 : 0;
     this->V[X] = sum & 0xFF;
@@ -101,24 +113,28 @@ void VM::addRegisters(uint8_t X, uint8_t Y)
 
 void VM::subRegisters(uint8_t X, uint8_t Y)
 {
+    // V[X] = V[X] - V[Y], set VF = NOT borrow
     this->V[0xF] = (this->V[X] > this->V[Y]) ? 1 : 0;
     this->V[X] -= this->V[Y];
 }
 
 void VM::subRegistersReverse(uint8_t X, uint8_t Y)
 {
+    // V[X] = V[Y] - V[X], set VF = NOT borrow
     this->V[0xF] = (this->V[Y] > this->V[X]) ? 1 : 0;
     this->V[X] = this->V[Y] - this->V[X];
 }
 
 void VM::shiftRight(uint8_t X)
 {
+    // V[X] = V[X] >> 1, set VF = least significant bit before shift
     this->V[0xF] = this->V[X] & 0x1;
     this->V[X] >>= 1;
 }
 
 void VM::shiftLeft(uint8_t X)
 {
+    // V[X] = V[X] << 1, set VF = most significant bit before shift
     this->V[0xF] = (this->V[X] & 0x80) >> 7;
     this->V[X] <<= 1;
 }
@@ -127,21 +143,25 @@ void VM::shiftLeft(uint8_t X)
 
 void VM::skipIfEqual(uint8_t X, uint8_t NN)
 {
+    // Skip next instruction if V[X] == NN
     this->PC += (this->V[X] == NN) ? 2 : 0;
 }
 
 void VM::skipIfNotEqual(uint8_t X, uint8_t NN)
 {
+    // Skip next instruction if V[X] != NN
     this->PC += (this->V[X] != NN) ? 2 : 0;
 }
 
 void VM::skipIfRegistersEqual(uint8_t X, uint8_t Y)
 {
+    // Skip next instruction if V[X] == V[Y]
     this->PC += (this->V[X] == this->V[Y]) ? 2 : 0;
 }
 
 void VM::skipIfRegistersNotEqual(uint8_t X, uint8_t Y)
 {
+    // Skip next instruction if V[X] != V[Y]
     this->PC += (this->V[X] != this->V[Y]) ? 2 : 0;
 }
 
@@ -149,16 +169,19 @@ void VM::skipIfRegistersNotEqual(uint8_t X, uint8_t Y)
 
 void VM::addToIndex(uint8_t X)
 {
+    // I = I + V[X]
     this->I += this->V[X];
 }
 
 void VM::setIndexToFont(uint8_t X)
 {
+    // I = location of sprite for digit V[X]
     this->I = this->V[X] * 5;
 }
 
 void VM::storeBCD(uint8_t X)
 {
+    // Store BCD representation of V[X] in memory at I, I+1, I+2
     uint8_t value = this->V[X];
     this->RAM[this->I]     = value / 100;
     this->RAM[this->I + 1] = (value / 10) % 10;
@@ -167,12 +190,14 @@ void VM::storeBCD(uint8_t X)
 
 void VM::storeRegisters(uint8_t X)
 {
+    // Store registers V[0] to V[X] in memory starting at I
     for (uint8_t i = 0; i <= X; i++)
         this->RAM[this->I + i] = this->V[i];
 }
 
 void VM::loadRegisters(uint8_t X)
 {
+    // Load registers V[0] to V[X] from memory starting at I
     for (uint8_t i = 0; i <= X; i++)
         this->V[i] = this->RAM[this->I + i];
 }
@@ -181,6 +206,7 @@ void VM::loadRegisters(uint8_t X)
 
 void VM::drawSprite(uint8_t X, uint8_t Y, uint8_t N)
 {
+    // Draw sprite at (V[X], V[Y]) with N bytes of sprite data starting at I
     uint8_t xPos = this->V[X] % 64;
     uint8_t yPos = this->V[Y] % 32;
     this->V[0xF] = 0;
@@ -205,6 +231,7 @@ void VM::drawSprite(uint8_t X, uint8_t Y, uint8_t N)
 
 void VM::skipIfKeyPressed(uint8_t X)
 {
+    // Skip next instruction if key with value V[X] is pressed
     SDL_Keycode key = chip8ToSDLKey(this->V[X]);
     if (this->keyboard && this->keyboard->IsKeyPressed(key))
         this->PC += 2;
@@ -212,6 +239,7 @@ void VM::skipIfKeyPressed(uint8_t X)
 
 void VM::skipIfKeyNotPressed(uint8_t X)
 {
+    // Skip next instruction if key with value V[X] is not pressed
     SDL_Keycode key = chip8ToSDLKey(this->V[X]);
     if (this->keyboard && !this->keyboard->IsKeyPressed(key))
         this->PC += 2;
@@ -221,6 +249,7 @@ void VM::skipIfKeyNotPressed(uint8_t X)
 
 void VM::random(uint8_t X, uint8_t NN)
 {
+    // Set V[X] to random byte AND NN
     static std::mt19937 rng((uint32_t)SDL_GetTicks());
     std::uniform_int_distribution<int> dist(0, 255);
     this->V[X] = (uint8_t)(dist(rng) & NN);
@@ -318,7 +347,7 @@ VM::VM(uint16_t pc_inicial, Display *disp, Keyboard *keyb)
     delayTimer = 0;
     soundTimer = 0;
 }
-
+// Carrega uma ROM na memória da VM
 void VM::CarregarROM(const char *arq_rom, uint16_t pc_inicial, Display *disp, Keyboard *keyb)
 {
     this->display = disp;
@@ -389,6 +418,7 @@ void VM::ExecutarInstrucao()
 
 void VM::ImprimirRegistradores()
 {
+    // Imprime o estado dos registradores da VM
     printf("PC: 0x%04X I: 0x%04X SP: 0x%02X\n", this->PC, this->I, this->SP);
     for (int i = 0; i < 16; i++)
         printf("V[%X]: 0x%02X ", i, this->V[i]);
@@ -399,6 +429,7 @@ void VM::run()
 {
     while (true)
     {
+        //
         ExecutarInstrucao();
         ImprimirRegistradores();
     }
