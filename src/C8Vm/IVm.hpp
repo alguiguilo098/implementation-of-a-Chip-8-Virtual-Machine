@@ -1,5 +1,7 @@
 #include <cstdint>
 #include <stdint.h>
+
+// Interface para VM
 class IVM
 {
 

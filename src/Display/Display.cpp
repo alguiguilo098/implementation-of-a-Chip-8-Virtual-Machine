@@ -1,6 +1,8 @@
 #include "Display.hpp"
 #include <iostream>
 
+
+// Construtor
 Display::Display() : pixels(WIDTH * HEIGHT, 0) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
         throw std::runtime_error(std::string("SDL_Init falhou: ") + SDL_GetError());
@@ -14,6 +16,7 @@ Display::Display() : pixels(WIDTH * HEIGHT, 0) {
         SDL_WINDOW_SHOWN
     );
 
+// Verifica se a janela foi criada com sucesso
     if (!window)
         throw std::runtime_error(std::string("Falha ao criar janela: ") + SDL_GetError());
 
@@ -21,29 +24,29 @@ Display::Display() : pixels(WIDTH * HEIGHT, 0) {
     if (!renderer)
         throw std::runtime_error(std::string("Falha ao criar renderer: ") + SDL_GetError());
 }
-
+// Destrutor
 Display::~Display() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
-
+// Limpa o display
 void Display::Clear() {
     std::fill(pixels.begin(), pixels.end(), 0);
 }
-
+// Desenha um pixel no display
 void Display::DrawPixel(int x, int y, bool value) {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return;
 
     pixels[y * WIDTH + x] = value ? 1 : 0;
 }
-
+// Atualiza o display a partir da memória fornecida
 void Display::UpdateFromMemory(const uint8_t* memoryDisplay) {
     for (int i = 0; i < WIDTH * HEIGHT; ++i)
         pixels[i] = memoryDisplay[i];
 }
-
+// Renderiza o display na janela
 void Display::Render() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);

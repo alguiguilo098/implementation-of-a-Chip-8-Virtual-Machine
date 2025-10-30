@@ -1,5 +1,9 @@
 #include "Keyboard.hpp"
 
+//Esse keyboard foi baseado no keyboard visto em aula
+
+
+// Construtor
 Keyboard::Keyboard() : quit(false) {
     keyStates.fill(false);
     chipKeys.fill(0);
@@ -39,7 +43,7 @@ int Keyboard::SDLKeyToChip8Index(SDL_Keycode k)
         default: return -1;
     }
 }
-
+// Processa eventos SDL 
 void Keyboard::Update() {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
@@ -56,16 +60,18 @@ void Keyboard::Update() {
             int idx = SDLKeyToChip8Index(kc);
             if (idx >= 0 && idx < 16) chipKeys[idx] = pressed ? 1 : 0;
 
-            // ESC também pode sinalizar quit (opcional)
+            // ESC também pode sinalizar quit
             if (kc == SDLK_ESCAPE && pressed) quit = true;
         }
     }
 }
 
+// Para o main: fechar janela / ESC
 bool Keyboard::ShouldQuit() const {
     return quit;
 }
 
+// Consulta por SDL_Keycode (usado pela VM que converte CHIP-8 -> SDL_Keycode)
 bool Keyboard::IsKeyPressed(SDL_Keycode key) const {
     SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
     if (scancode >= 0 && scancode < SDL_NUM_SCANCODES)
@@ -73,6 +79,7 @@ bool Keyboard::IsKeyPressed(SDL_Keycode key) const {
     return false;
 }
 
+// Retorna estado das 16 teclas do CHIP-8
 std::array<uint8_t,16> Keyboard::GetChip8Keys() const {
     return chipKeys;
 }

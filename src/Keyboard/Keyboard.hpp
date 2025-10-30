@@ -7,7 +7,7 @@ class Keyboard {
 public:
     Keyboard();
 
-    // Processa eventos SDL (deve ser chamado no loop principal)
+    // Processa eventos SDL 
     void Update();
 
     // Para o main: fechar janela / ESC
@@ -26,6 +26,6 @@ private:
     // estado do keypad Chip-8 (0 ou 1)
     std::array<uint8_t,16> chipKeys;
 
-    // helper: converte SDL_Keycode -> índice Chip-8 (0..15) ou -1 se não mapeado
+    // helper: converte SDL_Keycode -> índice Chip-8 
     static int SDLKeyToChip8Index(SDL_Keycode k);
 };

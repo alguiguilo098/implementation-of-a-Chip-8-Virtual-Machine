@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include "../Display/IDisplay.hpp"
 
+
+// Implementação concreta da interface IDisplay usando SDL2
 class Display:IDisplay {
 public:
     int WIDTH = 64;

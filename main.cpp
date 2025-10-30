@@ -1,19 +1,19 @@
-// ...existing code...
 #include "./src/Display/Display.hpp"
 #include "./src/Keyboard/Keyboard.hpp"
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "./src/C8Vm/c8vm.hpp"
 
+// ---------- Main ----------
 int main(int argc, char** argv) {
     try {
         Display display;
         Keyboard keyboard;
 
-        // Inicializa VM com PC inicial em 0x200 e pelos ponteiros de display/keyboard
+        // inicializa VM com display e teclado
         VM chip8_vm(0x200, &display, &keyboard);
 
-        // Carrega ROM se fornecida
+        // carrega ROM se fornecida como argumento
         if (argc > 1) {
             chip8_vm.CarregarROM(argv[1], 0x200, &display, &keyboard);
             std::cout << "ROM carregada: " << argv[1] << std::endl;
@@ -21,11 +21,11 @@ int main(int argc, char** argv) {
             std::cout << "Nenhuma ROM fornecida. Rode: ./chip8 Imagens-Teste/<arquivo.ch8>" << std::endl;
         }
 
-        const int cyclesPerFrame = 8; // ajuste conforme necessário
+        const int cyclesPerFrame = 8; 
         bool running = true;
 
         while (running) {
-            // atualiza eventos / teclado
+            // atualiza eventos do teclado
             keyboard.Update();
             if (keyboard.ShouldQuit() || keyboard.IsKeyPressed(SDLK_ESCAPE))
                 break;
